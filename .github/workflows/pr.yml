@@ -57,6 +57,7 @@ jobs:
     uses: irishlab-io/.github/.github/workflows/reusable-sast.yml@main
 
     with:
+      codeql: true
       sonarqube: true
       snyk: false
 
