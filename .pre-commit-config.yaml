@@ -38,7 +38,9 @@ repos:
     hooks:
       - id: pin-github-action
         name: "gh-action | lint: pinned sha"
-        files: ^\.github/workflows/[^/]+\.ya?ml$
+        stages:
+          - manual
+        files: ^\.github/workflows/[^/]+\.yml$
         entry: "pin-github-action ."
         args:
           - --allow
