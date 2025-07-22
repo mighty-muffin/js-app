@@ -15,7 +15,7 @@ concurrency:
 jobs:
 
   pre-commit:
-    name: Call Pre-Commit run
+    name: Call Pre-Commit
     uses: irishlab-io/.github/.github/workflows/reusable-pre-commit.yml@main
 
   secret:
@@ -23,6 +23,85 @@ jobs:
       - pre-commit
     name: Call Secret Scanning
     uses: irishlab-io/.github/.github/workflows/reusable-secret.yml@main
-
     secrets:
       GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+
+  sca:
+    needs:
+      - pre-commit
+    name: Placeholder - Software Composition Analysis
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Run SCA
+        run: echo Software Composition Analysis
+        shell: bash
+
+  sast:
+    needs:
+      - pre-commit
+    name: Placeholder - Static Application Security Testing
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Run SAST
+        run: echo Static Application Security Testing
+        shell: bash
+
+  unit-test:
+    needs:
+      - secret
+      - sca
+      - sast
+    name: Unit & Integrations Tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Run Unit & Integrations Tests
+        uses: mighty-muffin/js-app/.github/actions/unit-test@main
+  
+  docker-build:
+    needs:
+      - secret
+      - pre-commit
+    name: Call Docker Build
+    uses: irishlab-io/.github/.github/workflows/reusable-docker-build.yml@main
+
+    permissions:
+      contents: read
+      packages: write
+      pull-requests: write
+
+    with:
+      file: "./Dockerfile"
+      platforms: |
+          linux/amd64
+
+  container-vulnerability:
+    needs:
+      - docker-build
+      - unit-test
+    name: Placeholder - Container Vulnerability Scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Run Container Vulnerability Scan
+        run: echo Container Vulnerability Scan
+        shell: bash
+
+  pr-gating:
+    needs:
+      - container-vulnerability
+      - unit-test
+    name: Placeholder - PR Gating
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Run PR Gating
+        run: echo PR Gating
+        shell: bash
