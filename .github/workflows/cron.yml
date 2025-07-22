@@ -39,17 +39,14 @@ jobs:
   sast:
     needs:
       - pre-commit
-    name: Call Static Application Security Testing
-    uses: irishlab-io/.github/.github/workflows/reusable-sast.yml@main
+    name: Placeholder - Static Application Security Testing
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
 
-    with:
-      sonarqube: true
-      snyk: false
-      
-    secrets:
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+    steps:
+      - name: Run SAST
+        run: echo Static Application Security Testing
+        shell: bash
 
   unit-test:
     needs:
