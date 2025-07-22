@@ -12,20 +12,20 @@ runs:
       shell: bash
   
     - name: Checkout
-      uses: actions/checkout@v4.0.0
+      uses: actions/checkout@v4.2.2
 
     - name: Setup Node.js
-      uses: actions/setup-node@v4.0.0
+      uses: actions/setup-node@v4.1.0
       with:
         node-version: 22
 
     - name: NodeJS Freeze
       run: |
-        echo "NODE=${node --version | sha256sum | cut -d' ' -f1}" >> $GITHUB_ENV
+        echo "NODE=$(node --version | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
       shell: bash
 
     - name: Enable Node.js cache
-      uses: actions/cache@v4.0.0
+      uses: actions/cache@v4.2.3
       with:
         path: ~/.npm
         key: node | ${{ env.NODE }} | ${{ hashFiles('**/package-lock.json') }}
