@@ -33,15 +33,23 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
 
+    permissions:
+      actions: read
+      contents: write
+
     steps:
       - name: Run SCA
         run: echo Software Composition Analysis
         shell: bash
         
+      - name: Run Syft
+        uses: anchore/sbom-action@v0.16.0
+
       - name: Run FOSSA 
         uses: fossas/fossa-action@v1.7.0
         with:
           api-key: ${{secrets.FOSSA_API_KEY}}
+
   sast:
     needs:
       - pre-commit
