@@ -1,0 +1,118 @@
+---
+name: CI - Main
+
+on: # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'README.md'
+    tags:
+      - v*
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+
+  pre-commit:
+    name: Call Pre-Commit run
+    uses: irishlab-io/.github/.github/workflows/reusable-pre-commit.yml@main
+
+  secret:
+    needs:
+      - pre-commit
+    name: Call Secret Scanning
+    uses: irishlab-io/.github/.github/workflows/reusable-secret.yml@main
+    secrets:
+      GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+
+  sca:
+    needs:
+      - pre-commit
+    name: Placeholder - Software Composition Analysis
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Run SCA
+        run: echo Software Composition Analysis
+        shell: bash
+
+  sast:
+    needs:
+      - pre-commit
+    name: Sonarqube Scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Connect Tailscale VPN
+        uses: tailscale/github-action@6986d2c82a91fbac2949fe01f5bab95cf21b5102 # v3.2.2
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          tags: "tag:ci"
+          version: "latest"
+          use-cache: "true"
+
+      - name: Run SAST - SonarQube
+        uses: SonarSource/sonarqube-scan-action@2500896589ef8f7247069a56136f8dc177c27ccf # v5.2.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Quality gating SAST - SonarQube
+        uses: SonarSource/sonarqube-quality-gate-action@cf038b0e0cdecfa9e56c198bbb7d21d751d62c3b # v1.2.0
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  unit-test:
+    needs:
+      - secret
+      - sca
+      - sast
+    name: Placeholder - Unit & Integrations Tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Run U&IT
+        run: echo Unit and Integrations Tests
+        shell: bash
+  
+  docker-build:
+    needs:
+      - secret
+      - pre-commit
+    name: Call Docker Build
+    uses: irishlab-io/.github/.github/workflows/reusable-docker-build.yml@main
+
+    permissions:
+      contents: read
+      packages: write
+      pull-requests: write
+
+    with:
+      file: "./Dockerfile"
+      platforms: |
+          linux/amd64
+
+  container-vulnerability:
+    needs:
+      - docker-build
+      - unit-test
+    name: Placeholder - Container Vulnerability Scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Run Container Vulnerability Scan
+        run: echo Container Vulnerability Scan
+        shell: bash

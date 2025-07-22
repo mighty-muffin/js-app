@@ -1,0 +1,48 @@
+---
+# pre-commit install --allow-missing-config &&  pre-commit autoupdate && pre-commit run --all-files --color auto
+exclude: |
+  (?x)^(
+    \.pre-commit-config\.yaml$
+  )
+fail_fast: false
+default_stages:
+  - pre-commit
+default_language_version:
+  python: python3.12
+default_install_hook_types:
+  - commit-msg
+  - pre-commit
+ci:
+  autoupdate_schedule: monthly
+  skip:
+    - ggshield
+    - pin-github-action
+repos:
+  - repo: meta
+    hooks:
+      - id: identity
+        name: "meta | pre-commit hooks"
+        stages:
+          - manual
+  - repo: https://github.com/gitguardian/ggshield
+    rev: v1.41.0
+    hooks:
+      - id: ggshield
+        name: "security | scan for secrets"
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.7
+    hooks:
+      - id: actionlint
+        name: "gh-action | lint: run actionlint"
+  - repo: local
+    hooks:
+      - id: pin-github-action
+        name: "gh-action | lint: pinned sha"
+        files: ^\.github/workflows/[^/]+\.ya?ml$
+        entry: "pin-github-action ."
+        args:
+          - --allow
+          - "irishlab-io/*"
+        language: node
+        additional_dependencies:
+          - pin-github-action@3.3.1
