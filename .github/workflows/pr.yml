@@ -37,7 +37,11 @@ jobs:
       - name: Run SCA
         run: echo Software Composition Analysis
         shell: bash
-
+        
+      - name: Run FOSSA 
+        uses: fossas/fossa-action@v1.7.0
+        with:
+          api-key: ${{secrets.FOSSA_API_KEY}}
   sast:
     needs:
       - pre-commit
