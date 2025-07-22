@@ -57,14 +57,13 @@ jobs:
       - secret
       - sca
       - sast
-    name: Placeholder - Unit & Integrations Tests
+    name: Unit & Integrations Tests
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 15
 
     steps:
-      - name: Run U&IT
-        run: echo Unit and Integrations Tests
-        shell: bash
+      - name: Run Unit & Integrations Tests
+        uses: mighty-muffin/js-app/.github/actions/unit-test@main
   
   docker-build:
     needs:
@@ -94,4 +93,17 @@ jobs:
     steps:
       - name: Run Container Vulnerability Scan
         run: echo Container Vulnerability Scan
+        shell: bash
+
+  container-push:
+    needs:
+      - container-vulnerability
+      - unit-test
+    name: Placeholder - Container Push
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Run Container Push
+        run: echo Container Push
         shell: bash
