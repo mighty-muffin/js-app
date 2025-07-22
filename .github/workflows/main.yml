@@ -17,7 +17,7 @@ concurrency:
 jobs:
 
   pre-commit:
-    name: Call Pre-Commit run
+    name: Call Pre-Commit
     uses: irishlab-io/.github/.github/workflows/reusable-pre-commit.yml@main
 
   secret:
@@ -81,6 +81,7 @@ jobs:
       file: "./Dockerfile"
       platforms: |
           linux/amd64
+          linux/arm64
 
   container-vulnerability:
     needs:
