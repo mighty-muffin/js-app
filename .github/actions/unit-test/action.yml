@@ -1,0 +1,38 @@
+# .github/actions/unit-test/action.yml
+name: Unit Test
+description: Run unit tests for the application
+author: mighty-muffin
+
+runs:
+  using: composite
+  steps:
+    - name: Run U&IT
+      run: |
+        echo "Run Unit and Integrations Tests"
+      shell: bash
+  
+    - name: Checkout
+      uses: actions/checkout@v4.2.2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4.1.0
+      with:
+        node-version: 22
+
+    - name: NodeJS Freeze
+      run: |
+        echo "NODE=$(node --version | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Enable Node.js cache
+      uses: actions/cache@v4.2.3
+      with:
+        path: ~/.npm
+        key: node | ${{ env.NODE }} | ${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node
+
+    - name: NPM Install CI
+      run: |
+        npm install ci
+      shell: bash
