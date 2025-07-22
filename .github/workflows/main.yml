@@ -31,7 +31,7 @@ jobs:
   sca:
     needs:
       - pre-commit
-    name: Placeholder - Software Composition Analysis
+    name: Placeholder - SCA
     runs-on: ubuntu-24.04
     timeout-minutes: 5
 
@@ -43,14 +43,18 @@ jobs:
   sast:
     needs:
       - pre-commit
-    name: Placeholder - Static Application Security Testing
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    name: Call SAST
+    uses: irishlab-io/.github/.github/workflows/reusable-sast.yml@main
 
-    steps:
-      - name: Run SAST
-        run: echo Static Application Security Testing
-        shell: bash
+    with:
+      sonarqube: true
+      snyk: false
+
+    secrets:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
 
   unit-test:
     needs:
