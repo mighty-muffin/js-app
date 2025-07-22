@@ -43,7 +43,7 @@ jobs:
         shell: bash
         
       - name: Run Syft
-        uses: anchore/sbom-action@v0.16.0
+        uses: anchore/sbom-action@v0.20.4
 
       - name: Run FOSSA 
         uses: fossas/fossa-action@v1.7.0
