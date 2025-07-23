@@ -88,6 +88,14 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@d6bbdef45e766d081b84a2def353b0055f728d3e # v3.29.3
 
+      - name: Upload CodeQL Results
+        uses: github/codeql-action/upload-sarif@d6bbdef45e766d081b84a2def353b0055f728d3e # v3.29.3
+        with:
+          category: codeql
+          sarif_file: results.sarif
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   sast-snyk:
     needs:
       - pre-commit
@@ -101,6 +109,29 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: 22
+
+      - name: NodeJS Freeze
+        run: |
+          echo "NODE=$(node --version | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Enable Node.js cache
+        uses: actions/cache@v4.2.3
+        with:
+          path: ~/.npm
+          key: node | ${{ env.NODE }} | ${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node
+
+      - name: NPM Install CI
+        run: |
+          npm install ci
+        shell: bash
+
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@b98d498629f1c368650224d6d212bf7dfa89e4bf # 0.4.0
         continue-on-error: true
@@ -110,6 +141,19 @@ jobs:
 
         with:
           args: --severity-threshold=high
+
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk-code.sarif
+
+      - name: Upload SNYK Results
+        uses: github/codeql-action/upload-sarif@d6bbdef45e766d081b84a2def353b0055f728d3e # v3.29.3
+        with:
+          category: snyk
+          sarif_file: results.sarif
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   unit-test:
     needs:
