@@ -1,0 +1,12 @@
+# .github/actions/sonarqube/action.yml
+name: SonarQube
+description: Run SonarQube
+author: mighty-muffin
+
+runs:
+  using: composite
+  steps:
+    - name: Run SonarQube
+      run: |
+        echo "Run SonarQube"
+      shell: bash

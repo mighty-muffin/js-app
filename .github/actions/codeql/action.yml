@@ -1,0 +1,12 @@
+# .github/actions/codeql/action.yml
+name: CodeQL
+description: Run CodeQL
+author: mighty-muffin
+
+runs:
+  using: composite
+  steps:
+    - name: Run CodeQL
+      run: |
+        echo "Run CodeQL"
+      shell: bash

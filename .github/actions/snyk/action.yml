@@ -1,0 +1,12 @@
+# .github/actions/snyk/action.yml
+name: SNYK
+description: Run SNYK
+author: mighty-muffin
+
+runs:
+  using: composite
+  steps:
+    - name: Run SNYK
+      run: |
+        echo "Run SNYK"
+      shell: bash

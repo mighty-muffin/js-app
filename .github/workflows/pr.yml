@@ -54,18 +54,18 @@ jobs:
     needs:
       - pre-commit
     name: Call SAST
-    uses: irishlab-io/.github/.github/workflows/reusable-sast.yml@main
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
 
-    with:
-      codeql: true
-      sonarqube: true
-      snyk: false
+    steps:
+      - name: Run CodeQL
+        uses: mighty-muffin/js-app/.github/actions/codeql@main
 
-    secrets:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+      - name: Run SNYK
+        uses: mighty-muffin/js-app/.github/actions/snyk@main
+
+      - name: Run SonarQube
+        uses: mighty-muffin/js-app/.github/actions/sonarqube@main
 
   unit-test:
     needs:
