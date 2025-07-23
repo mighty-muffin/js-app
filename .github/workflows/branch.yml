@@ -24,14 +24,3 @@ jobs:
 
     secrets:
       GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
-
-  unit-test:
-    needs:
-      - secret
-    name: Unit & Integrations Tests
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-
-    steps:
-      - name: Run Unit & Integrations Tests
-        uses: mighty-muffin/js-app/.github/actions/unit-test@main

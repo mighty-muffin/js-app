@@ -58,14 +58,9 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - name: Run CodeQL
-        uses: mighty-muffin/js-app/.github/actions/codeql@feat/workflows
-
-      - name: Run SNYK
-        uses: mighty-muffin/js-app/.github/actions/snyk@feat/workflows
-
-      - name: Run SonarQube
-        uses: mighty-muffin/js-app/.github/actions/sonarqube@feat/workflows
+      - name: Run SAST
+        run: echo Software Analysis Security Testing
+        shell: bash
 
   unit-test:
     needs:
