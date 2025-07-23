@@ -1,0 +1,23 @@
+# .github/actions/k6/action.yml
+name: k6 Load Testing
+description: Run k6 Load Testing
+author: mighty-muffin
+
+runs:
+  using: composite
+  steps:
+    - name: Run k6 Load Testing
+      run: |
+        echo "Run k6 Load Testing"
+      shell: bash
+
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Run k6 cloud test
+      uses: k6io/action@v0.1
+      with:
+        filename: k6-test.ts
+        cloud: true
+        token: $

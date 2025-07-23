@@ -1,0 +1,25 @@
+# .github/actions/codecov/action.yml
+name: Codecov
+description: Run Codecov
+author: mighty-muffin
+
+
+runs:
+  using: composite
+  steps:
+    - name: Run Codecov
+      run: |
+        echo "Run Codecov"
+      shell: bash
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+          fetch-depth: 0
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: $
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v1
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1

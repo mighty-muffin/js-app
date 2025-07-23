@@ -1,0 +1,20 @@
+# .github/actions/trufflehog/action.yml
+name: Trufflehog
+description: Run Trufflehog
+author: mighty-muffin
+
+runs:
+  using: composite
+  steps:
+    - name: Run Trufflehog
+      run: |
+        echo "Run Trufflehog"
+      shell: bash
+    - name: Check out the code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: trufflehog-actions-scan
+      uses: edplato/trufflehog-actions-scan@master
+      with:
+        scanArguments: "--regex --entropy=False --max_depth=5" 

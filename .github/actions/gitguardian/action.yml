@@ -1,0 +1,26 @@
+# .github/actions/gitguardian/action.yml
+name: GitGuardian
+description: Run GitGuardian
+author: mighty-muffin
+
+runs:
+  using: composite
+  steps:
+    - name: Run GitGuardian
+      run: |
+        echo "Run GitGuardian"
+      shell: bash
+    - name: Check out the code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: GitGuardian scan
+      uses: GitGuardian/ggshield-action@master
+      with:
+        args: -v --all-policies
+      env:
+        GITHUB_PUSH_BEFORE_SHA: $
+        GITHUB_PUSH_BASE_SHA: $
+        GITHUB_PULL_BASE_SHA: $
+        GITHUB_DEFAULT_BRANCH: $
+        GITGUARDIAN_API_KEY: $   

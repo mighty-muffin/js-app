@@ -1,14 +1,14 @@
-# .github/actions/snyk/action.yml
-name: SNYK
-description: Run SNYK
+# .github/actions/snyk-code/action.yml
+name: SNYK Code
+description: Run SNYK Code
 author: mighty-muffin
 
 runs:
   using: composite
   steps:
-    - name: Run SNYK
+    - name: Run SNYK Code
       run: |
-        echo "Run SNYK"
+        echo "Run SNYK Code"
       shell: bash
 
     - name: Checkout
