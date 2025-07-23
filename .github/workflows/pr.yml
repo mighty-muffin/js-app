@@ -166,7 +166,7 @@ jobs:
   sast-sonarqube:
     needs:
       - pre-commit
-    name: Call Snyk
+    name: Call SonarQube
     runs-on: ubuntu-24.04
     timeout-minutes: 15
 
