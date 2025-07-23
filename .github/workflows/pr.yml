@@ -59,13 +59,13 @@ jobs:
 
     steps:
       - name: Run CodeQL
-        uses: mighty-muffin/js-app/.github/actions/codeql@main
+        uses: mighty-muffin/js-app/.github/actions/codeql@feat/workflows
 
       - name: Run SNYK
-        uses: mighty-muffin/js-app/.github/actions/snyk@main
+        uses: mighty-muffin/js-app/.github/actions/snyk@feat/workflows
 
       - name: Run SonarQube
-        uses: mighty-muffin/js-app/.github/actions/sonarqube@main
+        uses: mighty-muffin/js-app/.github/actions/sonarqube@feat/workflows
 
   unit-test:
     needs:
