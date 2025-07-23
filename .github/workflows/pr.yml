@@ -86,6 +86,9 @@ jobs:
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@d6bbdef45e766d081b84a2def353b0055f728d3e # v3.29.3
+        with:
+          languages: java
+          dependency-caching: true
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@d6bbdef45e766d081b84a2def353b0055f728d3e # v3.29.3
@@ -93,13 +96,13 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@d6bbdef45e766d081b84a2def353b0055f728d3e # v3.29.3
 
-      - name: Upload CodeQL Results
-        uses: github/codeql-action/upload-sarif@d6bbdef45e766d081b84a2def353b0055f728d3e # v3.29.3
-        with:
-          category: codeql
-          sarif_file: codeql-results.sarif
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Upload CodeQL Results
+      #   uses: github/codeql-action/upload-sarif@d6bbdef45e766d081b84a2def353b0055f728d3e # v3.29.3
+      #   with:
+      #     category: codeql
+      #     sarif_file: codeql-results.sarif
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   sast-snyk:
     needs:
@@ -118,13 +121,6 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/setup@0.4.0
-        continue-on-error: true
-
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4.1.0
@@ -149,17 +145,66 @@ jobs:
           npm install ci
         shell: bash
 
-      - name: Snyk Code test
-        run: |
-          snyk code test --sarif > snyk-results.sarif
-        shell: bash
-  
-      - name: Upload SNYK Results
-        uses: github/codeql-action/upload-sarif@d6bbdef45e766d081b84a2def353b0055f728d3e # v3.29.3
-        with:
-          category: snyk
-          sarif_file: snyk-results.sarif
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@b98d498629f1c368650224d6d212bf7dfa89e4bf # 0.4.0
+        continue-on-error: true
 
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+        with:
+          args: --severity-threshold=high
+
+      # - name: Upload SNYK Results
+      #   uses: github/codeql-action/upload-sarif@d6bbdef45e766d081b84a2def353b0055f728d3e # v3.29.3
+      #   with:
+      #     category: snyk
+      #     sarif_file: snyk-code.sarif
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sast-sonarqube:
+    needs:
+      - pre-commit
+    name: Call Snyk
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Connect Tailscale VPN
+        uses: tailscale/github-action@84a3f23bb4d843bcf4da6cf824ec1be473daf4de # v3.2.3
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          tags: "tag:ci"
+          version: "latest"
+          use-cache: "true"
+
+      - name: Run SAST - SonarQube
+        uses: SonarSource/sonarqube-scan-action@2500896589ef8f7247069a56136f8dc177c27ccf # v5.2.0
+        with:
+          args: |
+            -Dsonar.projectKey=${{ github.event.repository.name }}
+            -Dsonar.projectName=${{ github.event.repository.name }}
+            -Dsonar.projectVersion=${{ github.event.repository.default_branch }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Quality gating SAST - SonarQube
+        uses: SonarSource/sonarqube-quality-gate-action@cf038b0e0cdecfa9e56c198bbb7d21d751d62c3b # v1.2.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          
   unit-test:
     needs:
       - secret
@@ -167,6 +212,7 @@ jobs:
       - sast
       - sast-codeql
       - sast-snyk
+      - sast-sonarqube
     name: Unit & Integrations Tests
     runs-on: ubuntu-24.04
     timeout-minutes: 15
