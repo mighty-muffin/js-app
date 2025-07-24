@@ -31,7 +31,7 @@ jobs:
   sca:
     needs:
       - pre-commit
-    name: Placeholder - Software Composition Analysis
+    name: Placeholder - SCA
     runs-on: ubuntu-24.04
     timeout-minutes: 5
 
@@ -43,13 +43,13 @@ jobs:
   sast:
     needs:
       - pre-commit
-    name: Placeholder - Static Application Security Testing
+    name: Call SAST
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 15
 
     steps:
       - name: Run SAST
-        run: echo Static Application Security Testing
+        run: echo Software Analysis Security Testing
         shell: bash
 
   unit-test:

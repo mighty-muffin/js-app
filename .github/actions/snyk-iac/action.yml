@@ -1,0 +1,23 @@
+# .github/actions/snyk-iac/action.yml
+name: SNYK IaC
+description: Run SNYK IaC
+author: mighty-muffin
+
+runs:
+  using: composite
+  steps:
+    - name: Run SNYK IaC
+      run: |
+        echo "Run SNYK IaC"
+      shell: bash
+
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        fetch-depth: 0
+
+    - name: Run Snyk to check configuration files for security issues
+      continue-on-error: true
+      uses: snyk/actions/iac@master
+      env:
+        SNYK_TOKEN: $

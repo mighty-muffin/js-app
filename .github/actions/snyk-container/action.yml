@@ -1,0 +1,26 @@
+# .github/actions/snyk-container/action.yml
+name: SNYK Container
+description: Run SNYK Container
+author: mighty-muffin
+
+runs:
+  using: composite
+  steps:
+    - name: Run SNYK Container
+      run: |
+        echo "Run SNYK Container"
+      shell: bash
+
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        fetch-depth: 0
+
+    - name: Run Snyk to check Docker image for vulnerabilities
+      continue-on-error: true
+      uses: snyk/actions/docker@master
+      env:
+        SNYK_TOKEN: $
+      with:
+        image: your/image-to-test
+        args: --sarif-file-output=snyk.sarif --file=Dockerfile

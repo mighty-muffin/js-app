@@ -1,0 +1,25 @@
+# .github/actions/shiftleft/action.yml
+name: ShiftLeft
+description: Run ShiftLeft
+author: mighty-muffin
+
+
+runs:
+  using: composite
+  steps:
+    - name: Run ShiftLeft
+      run: |
+        echo "Run ShiftLeft"
+      shell: bash
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+          fetch-depth: 0
+    - name: Perform Scan
+      uses: ShiftLeftSecurity/scan-action@39af9e54bc599c8077e710291d790175c9231f64
+      env:
+        WORKSPACE: ""
+        GITHUB_TOKEN: $
+        SCAN_AUTO_BUILD: true
+      with:
+        output: reports

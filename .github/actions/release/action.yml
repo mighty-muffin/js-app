@@ -1,0 +1,38 @@
+# .github/actions/release/action.yml
+name: release
+description: Run release
+author: mighty-muffin
+
+
+runs:
+  using: composite
+  steps:
+    - name: Run release
+      run: |
+        echo "Run release"
+      shell: bash
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+          fetch-depth: 0
+    - name: Bump version and push tag
+      id: tag_version
+      uses: anothrNick/github-tag-action@1.26.0
+      env:
+        GITHUB_TOKEN: $
+        WITH_V: true
+  
+    - name: Build Changelog
+      id: github_release
+      uses: mikepenz/release-changelog-builder-action@v1
+      env:
+        GITHUB_TOKEN: $
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      with:
+        tag_name: $
+        release_name: Release $
+        body: $
+      env:
+        GITHUB_TOKEN: $  

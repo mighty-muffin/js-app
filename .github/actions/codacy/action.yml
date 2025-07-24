@@ -1,0 +1,29 @@
+# .github/actions/codacy/action.yml
+name: Codacy
+description: Run Codacy
+author: mighty-muffin
+
+runs:
+  using: composite
+  steps:
+    - name: Run Codacy
+      run: |
+        echo "Run Codacy"
+      shell: bash
+
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Run Codacy Analysis CLI
+      uses: codacy/codacy-analysis-cli-action@master
+      with:
+        output: codacy.sarif
+        format: sarif
+        gh-code-scanning-compat: true
+        max-allowed-issues: 2147483647
+    
+    - name: Upload SARIF results file
+      uses: github/codeql-action/upload-sarif@main
+      with:
+        sarif_file: codacy.sarif   
