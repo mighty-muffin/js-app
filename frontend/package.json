@@ -68,7 +68,7 @@
     "@angular/language-service": "^19.2.5",
     "@types/express-serve-static-core": "^4.17.9",
     "@types/file-saver": "^2.0.1",
-    "@types/jasmine": "~3.9.1",
+    "@types/jasmine": "~3.10.0",
     "@types/jasminewd2": "^2.0.10",
     "@types/jwt-decode": "^2.2.1",
     "@types/node": "^20.11.19",
